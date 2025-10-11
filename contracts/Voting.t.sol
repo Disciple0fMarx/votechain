@@ -57,7 +57,7 @@ contract VotingTest is Test {
 
         vm.prank(voter1);
         voting.submitVote(1, rating);
-        (uint256 _id, uint256 totalRating, uint256 voteCount) = voting.candidates(1);
+        (, uint256 totalRating, uint256 voteCount) = voting.candidates(1);
         assertEq(totalRating, rating, "Total rating should match submitted rating");
         assertEq(voteCount, 1, "Vote count should be 1");
         assertEq(voting.hasVoted(voter1, 1), true, "Voter should be marked as voted");
