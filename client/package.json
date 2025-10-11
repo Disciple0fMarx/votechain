@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
+    "ethers": "^6.15.0",
     "pinia": "^3.0.3",
     "tailwind": "^4.0.0",
     "vue": "^3.5.22",
