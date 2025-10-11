@@ -1,22 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { ethers } from 'ethers'
-import type { ContractInstance } from '@/types/contract'
+import type { ContractInstance, VotingContractMethods } from '@/types/contract'
 import { useWalletStore } from './wallet'
 import VotingABI from '@/../../artifacts/contracts/Voting.sol/Voting.json'
-
-
-interface VotingContractMethods {
-  owner: () => Promise<string>
-  votingActive: () => Promise<boolean>
-  candidateCount: () => Promise<bigint>
-  addCandidate: (_id: bigint) => Promise<void>
-  startVoting: () => Promise<void>
-  endVoting: () => Promise<void>
-  submitVote: (_candidateId: bigint, _rating: bigint) => Promise<void>
-  getAverageRating: (_candidateId: bigint) => Promise<bigint>
-  candidates: (_id: bigint) => Promise<[bigint, bigint, bigint]> // For the candidates mapping
-}
 
 
 export const useContractStore = defineStore('contract', () => {
