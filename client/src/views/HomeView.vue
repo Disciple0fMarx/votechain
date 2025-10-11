@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
-      <h1 class="text-3xl font-bold mb-6 text-center">Voting DApp</h1>
+      <h1 class="text-3xl font-bold mb-6 text-center">VoteChain</h1>
       <p class="mb-4 text-gray-600 text-center">Connect your wallet to participate in percentage-based voting.</p>
       <AppButton
         v-if="!web3.isConnected.value"

@@ -9,10 +9,15 @@ export const useVoting = () =>{
   const error = ref<string | null>(null)
 
   const startVoting = async () => {
-    if (!contractStore.contractInstance?.contract || !contractStore.isOwner) {
-      error.value = 'Contract not initialized or not owner'
+    if (!contractStore.contractInstance?.contract) {
+      error.value = 'Contract not initialized'
       return
     }
+    if (!contractStore.isOwner) {
+      error.value = 'Only the owner can start voting'
+      return
+    }
+
     isLoading.value = true
     error.value = null
     try {
@@ -29,10 +34,15 @@ export const useVoting = () =>{
   }
 
   const endVoting = async () => {
-    if (!contractStore.contractInstance?.contract || !contractStore.isOwner) {
-      error.value = 'Contract not initialized or not owner'
+    if (!contractStore.contractInstance?.contract) {
+      error.value = 'Contract not initialized'
       return
     }
+    if (!contractStore.isOwner) {
+      error.value = 'Only the owner can start voting'
+      return
+    }
+
     isLoading.value = true
     error.value = null
     try {
