@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {Voting} from "./Voting.sol";
@@ -33,9 +33,12 @@ contract VotingTest is Test {
         assertEq(voting.candidateCount(), 1, "Candidate count should be 1");
     }
 
-    function testFail_AddCandidateNonOwner() public {
+    function test_AddCandidateNonOwner() public {
         vm.prank(voter1);
-        voting.addCandidate(1); // Should revert
+        vm.expectRevert(
+            abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, voter1)
+        );
+        voting.addCandidate(1);
     }
 
     function test_StartAndEndVoting() public {
@@ -64,25 +67,27 @@ contract VotingTest is Test {
         assertEq(voting.getAverageRating(1), rating, "Average rating should match");
     }
 
-    function testFail_VoteWhenNotActive() public {
+    function test_VoteWhenNotActive() public {
         vm.prank(owner);
         voting.addCandidate(1);
 
         vm.prank(voter1);
-        voting.submitVote(1, 75); // Should revert (voting not active)
+        vm.expectRevert("Voting not active");
+        voting.submitVote(1, 75);
     }
 
-    function testFail_InvalidRating() public {
+    function test_InvalidRating() public {
         vm.prank(owner);
         voting.addCandidate(1);
         vm.prank(owner);
         voting.startVoting();
 
         vm.prank(voter1);
-        voting.submitVote(1, 101); // Should revert (rating > 100)
+        vm.expectRevert("Rating must be 0-100");
+        voting.submitVote(1, 101);
     }
 
-    function testFail_DoubleVoting() public {
+    function test_DoubleVoting() public {
         vm.prank(owner);
         voting.addCandidate(1);
         vm.prank(owner);
@@ -91,14 +96,16 @@ contract VotingTest is Test {
         vm.prank(voter1);
         voting.submitVote(1, 75);
         vm.prank(voter1);
-        voting.submitVote(1, 50); // Should revert (already voted)
+        vm.expectRevert("Already voted");
+        voting.submitVote(1, 50);
     }
 
-    function testFail_InvalidCandidate() public {
+    function test_InvalidCandidate() public {
         vm.prank(owner);
         voting.startVoting();
 
         vm.prank(voter1);
-        voting.submitVote(999, 75); // Should revert (candidate doesn't exist)
+        vm.expectRevert("Invalid candidate");
+        voting.submitVote(999, 75);
     }
 }
