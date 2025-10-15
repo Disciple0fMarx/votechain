@@ -18,7 +18,7 @@
       </AppButton>
     </div>
     <LoadingSpinner :is-loading="isLoading" />
-    <ErrorMessage :message="error || 'Unknown error'" />
+    <ErrorMessage v-if="error" :message="error" />
   </div>
 </template>
 

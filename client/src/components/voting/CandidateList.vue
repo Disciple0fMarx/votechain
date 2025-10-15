@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-2xl font-bold mb-4">Candidates</h2>
     <LoadingSpinner :is-loading="isLoading" />
-    <ErrorMessage :message="error || 'Unknown error'" />
+    <ErrorMessage v-if="error" :message="error" />
     <div v-if="candidates.length === 0 && !isLoading" class="text-gray-500">
       No candidates available.
     </div>

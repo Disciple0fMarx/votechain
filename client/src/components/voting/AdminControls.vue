@@ -2,7 +2,7 @@
   <div class="border rounded p-4 bg-gray-50">
     <h2 class="text-2xl font-bold mb-4">Admin Controls</h2>
     <LoadingSpinner :is-loading="isLoading" />
-    <ErrorMessage :message="error || 'Unknown error'" />
+    <ErrorMessage v-if="error" :message="error" />
     <div class="space-y-4">
       <div>
         <AppButton

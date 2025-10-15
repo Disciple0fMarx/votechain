@@ -22,7 +22,7 @@
         </router-link>
       </div>
       <LoadingSpinner :is-loading="web3.isConnecting.value" />
-      <ErrorMessage :message="web3.error.value || 'Unknown error'" />
+      <ErrorMessage v-if="web3.error.value" :message="web3.error.value" />
     </div>
   </div>
 </template>
