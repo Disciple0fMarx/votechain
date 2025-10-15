@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { ethers } from 'ethers'
+import type { Signer } from 'ethers'
 import type { ContractInstance, VotingContractMethods } from '@/types/contract'
 import { useWalletStore } from './wallet'
 import VotingABI from '@/../../artifacts/contracts/Voting.sol/Voting.json'
@@ -14,10 +15,23 @@ export const useContractStore = defineStore('contract', () => {
 
   const initializeContract = async () => {
     const wallet = useWalletStore()
-    if (!wallet.isConnected || !wallet.signer || !wallet.address) {
+    // unwrap possible shallowRef for signer and provider
+    const unwrap = <T>(maybeRef: unknown): T | null => {
+      if (!maybeRef) return null
+      if (typeof maybeRef === 'object' && maybeRef !== null && 'value' in maybeRef) {
+        const container = maybeRef as { value?: unknown }
+        return (container.value as T) ?? null
+      }
+      return maybeRef as T
+    }
+
+    const resolvedSigner = unwrap<Signer>(wallet.signer)
+    const resolvedProvider = unwrap<ethers.BrowserProvider | null>(wallet.provider)
+
+    if (!wallet.isConnected || !resolvedSigner || !wallet.address) {
       console.error('Wallet not connected', {
         isConnected: wallet.isConnected,
-        hasSigner: !!wallet.signer,
+        hasSigner: !!resolvedSigner,
         hasAddress: !!wallet.address
       })
       throw new Error('Wallet not connected')
@@ -29,10 +43,23 @@ export const useContractStore = defineStore('contract', () => {
     }
 
     try {
+      // If we have a provider, verify the contract code exists at the address to avoid BAD_DATA decode errors
+      if (resolvedProvider) {
+        try {
+          const code = await resolvedProvider.getCode(contractAddress)
+          if (!code || code === '0x') {
+            throw new Error(`No contract code at ${contractAddress}`)
+          }
+        } catch (err) {
+          console.error('Failed to fetch contract code:', err)
+          throw new Error('Contract not found on network')
+        }
+      }
+
       const contract = new ethers.Contract(
         contractAddress,
         VotingABI.abi,
-        wallet.signer
+        resolvedSigner
       ) as ethers.Contract & VotingContractMethods
 
       contractInstance.value = {
